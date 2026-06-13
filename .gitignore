@@ -1,6 +1,10 @@
 # Local config holds the shared token -- never commit it.
 config.toml
 
+# LocalDrop service files
+com.localdrop.plist 
+localdrop.service
+
 # Python
 __pycache__/
 *.pyc

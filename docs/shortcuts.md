@@ -22,9 +22,16 @@ cp examples/config.example.toml config.toml
 
 ---
 
-## Hyprland keybinding — send files to the Mac
+## Linux / Hyprland integration — send files to the Mac
 
-Binds a key combo to a file picker that sends the chosen file to the peer.
+LocalDrop includes a small Linux helper script:
+
+```bash
+~/projects/localdrop/scripts/localdrop-send.sh
+```
+
+It opens a file picker and sends the chosen file to the peer. You can trigger it
+either with a Hyprland keybind or as a Caelestia launcher action.
 
 ### 1. Install zenity (file picker)
 
@@ -32,9 +39,18 @@ Binds a key combo to a file picker that sends the chosen file to the peer.
 sudo pacman -S zenity
 ```
 
-### 2. Add the keybinding to hyprland.conf
+### Option A — Hyprland keybind
 
-Open `~/.config/hypr/hyprland.conf` and add:
+Add a keybind that runs the helper script.
+
+For a regular Hyprland config, add this to `~/.config/hypr/hyprland.conf`:
+
+```ini
+bind = $mainMod SHIFT, D, exec, ~/projects/localdrop/scripts/localdrop-send.sh
+```
+
+If you use the Caelestia dotfiles, put custom Hyprland binds in
+`~/.config/caelestia/hypr-user.conf` instead:
 
 ```ini
 bind = $mainMod SHIFT, D, exec, ~/projects/localdrop/scripts/localdrop-send.sh
@@ -42,7 +58,7 @@ bind = $mainMod SHIFT, D, exec, ~/projects/localdrop/scripts/localdrop-send.sh
 
 Change the key combo to whatever you prefer (`SUPER SHIFT D` in this example).
 
-### 3. Reload Hyprland config
+Reload Hyprland config:
 
 ```
 SUPER + SHIFT + R   (default Hyprland reload bind)
@@ -50,6 +66,151 @@ SUPER + SHIFT + R   (default Hyprland reload bind)
 
 Now pressing `SUPER + SHIFT + D` opens a file picker. Selecting a file sends it
 straight to the Mac.
+
+### Option B — Caelestia launcher action
+
+Caelestia launcher actions live in `~/.config/caelestia/shell.json`.
+
+The file usually contains only your overrides, so you may not see
+`launcher.actions` there yet. If you add `launcher.actions`, Caelestia replaces
+the default action list with the list you provide. To keep the built-in actions,
+copy the default actions and add LocalDrop at the end.
+
+If your `shell.json` is otherwise empty, you can use this full file:
+
+```json
+{
+  "launcher": {
+    "actions": [
+      {
+        "name": "Calculator",
+        "icon": "calculate",
+        "description": "Do simple math equations (powered by Qalc)",
+        "command": ["autocomplete", "calc"],
+        "enabled": true,
+        "dangerous": false
+      },
+      {
+        "name": "Scheme",
+        "icon": "palette",
+        "description": "Change the current colour scheme",
+        "command": ["autocomplete", "scheme"],
+        "enabled": true,
+        "dangerous": false
+      },
+      {
+        "name": "Wallpaper",
+        "icon": "image",
+        "description": "Change the current wallpaper",
+        "command": ["autocomplete", "wallpaper"],
+        "enabled": true,
+        "dangerous": false
+      },
+      {
+        "name": "Variant",
+        "icon": "colors",
+        "description": "Change the current scheme variant",
+        "command": ["autocomplete", "variant"],
+        "enabled": true,
+        "dangerous": false
+      },
+      {
+        "name": "Random",
+        "icon": "casino",
+        "description": "Switch to a random wallpaper",
+        "command": ["caelestia", "wallpaper", "-r"],
+        "enabled": true,
+        "dangerous": false
+      },
+      {
+        "name": "Light",
+        "icon": "light_mode",
+        "description": "Change the scheme to light mode",
+        "command": ["setMode", "light"],
+        "enabled": true,
+        "dangerous": false
+      },
+      {
+        "name": "Dark",
+        "icon": "dark_mode",
+        "description": "Change the scheme to dark mode",
+        "command": ["setMode", "dark"],
+        "enabled": true,
+        "dangerous": false
+      },
+      {
+        "name": "Shutdown",
+        "icon": "power_settings_new",
+        "description": "Shutdown the system",
+        "command": ["systemctl", "poweroff"],
+        "enabled": true,
+        "dangerous": true
+      },
+      {
+        "name": "Reboot",
+        "icon": "cached",
+        "description": "Reboot the system",
+        "command": ["systemctl", "reboot"],
+        "enabled": true,
+        "dangerous": true
+      },
+      {
+        "name": "Logout",
+        "icon": "exit_to_app",
+        "description": "Log out of the current session",
+        "command": ["loginctl", "terminate-user", ""],
+        "enabled": true,
+        "dangerous": true
+      },
+      {
+        "name": "Lock",
+        "icon": "lock",
+        "description": "Lock the current session",
+        "command": ["loginctl", "lock-session"],
+        "enabled": true,
+        "dangerous": false
+      },
+      {
+        "name": "Sleep",
+        "icon": "bedtime",
+        "description": "Suspend then hibernate",
+        "command": ["systemctl", "suspend-then-hibernate"],
+        "enabled": true,
+        "dangerous": false
+      },
+      {
+        "name": "Settings",
+        "icon": "settings",
+        "description": "Configure the shell",
+        "command": ["caelestia", "shell", "nexus", "open"],
+        "enabled": true,
+        "dangerous": false
+      },
+      {
+        "name": "Send File",
+        "icon": "send",
+        "description": "Send a file with LocalDrop",
+        "command": ["bash", "-lc", "~/projects/localdrop/scripts/localdrop-send.sh"],
+        "enabled": true,
+        "dangerous": false
+      }
+    ]
+  }
+}
+```
+
+If your `shell.json` already has other settings, merge this into the existing
+top-level object. If it already has a `"launcher"` block, add only the
+`"actions"` key inside that block so your other launcher settings stay intact.
+
+Restart Caelestia after editing:
+
+```bash
+qs -c caelestia kill
+caelestia shell -d
+```
+
+Open the launcher with `SUPER`, then type `>` and search for `Send File`.
 
 ---
 
