@@ -37,11 +37,13 @@ No `pip install` is needed.
 
 ## Setup
 
-On **each** device:
+Install in `~/projects/localdrop` on **both** devices — the scripts and
+systemd service assume this path:
 
 ```bash
-git clone https://github.com/Manuel0516/localdrop
-cd localdrop
+mkdir -p ~/projects
+git clone https://github.com/Manuel0516/localdrop ~/projects/localdrop
+cd ~/projects/localdrop
 cp examples/config.example.toml config.toml
 ```
 
@@ -101,6 +103,15 @@ See `examples/com.localdrop.plist.example` for a ready-to-edit LaunchAgent.
 > a multipart form. This keeps the code tiny and dependency-free (Python 3.13
 > removed the `cgi` module). See `DEVLOG.md` for the reasoning.
 
+## Shortcuts & integrations
+
+See **[docs/shortcuts.md](docs/shortcuts.md)** for step-by-step guides:
+
+- **Hyprland keybinding** — open a file picker and send to Mac with one key press
+- **macOS Finder Quick Action** — right-click any file → Send with LocalDrop
+- **iPhone Shortcuts** — send clipboard or files to Linux from the Share Sheet
+  *(Linux → iPhone is not supported in v1)*
+
 ## Project layout
 
 ```
@@ -110,6 +121,11 @@ src/
   clipboard.py             read/write clipboard + watcher loop
   transfer.py              HTTP server + client (send/ping)
   notify.py                optional desktop notifications
+scripts/
+  localdrop-send.sh        Linux/Hyprland file picker helper
+  localdrop-send-mac.sh    macOS file picker helper
+docs/
+  shortcuts.md             Hyprland, macOS, and iPhone integration guide
 examples/
   config.example.toml      config template (copy to config.toml)
   localdrop.service.example     Linux systemd user unit
