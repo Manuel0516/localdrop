@@ -32,13 +32,21 @@ def write_command(args, text):
     serving the selection, and if we captured its output the lingering child
     would hold the pipe open and make subprocess.run() block forever.
     """
-    subprocess.run(
-        args,
-        input=text,
-        text=True,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-    )
+    try:
+        subprocess.run(
+            args,
+            input=text,
+            text=True,
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=True,
+        )
+    except FileNotFoundError as e:
+        raise RuntimeError(f"clipboard command not found: {args[0]}") from e
+    except subprocess.CalledProcessError as e:
+        raise RuntimeError(
+            f"clipboard command failed: {args[0]} exited with {e.returncode}"
+        ) from e
 
 
 def read_clipboard(config):

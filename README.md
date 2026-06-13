@@ -40,7 +40,7 @@ No `pip install` is needed.
 On **each** device:
 
 ```bash
-git clone <your-repo-url> localdrop
+git clone https://github.com/Manuel0516/localdrop
 cd localdrop
 cp examples/config.example.toml config.toml
 ```
@@ -104,16 +104,48 @@ See `examples/com.localdrop.plist.example` for a ready-to-edit LaunchAgent.
 ## Project layout
 
 ```
-main.py                                 CLI entry: daemon | send | ping
-config.py                               load/validate config.toml
-clipboard.py                            read/write clipboard + watcher loop
-transfer.py                             HTTP server + client (send/ping)
-notify.py                               optional desktop notifications
+main.py                    CLI entry: daemon | send | ping
+src/
+  config.py                load/validate config.toml
+  clipboard.py             read/write clipboard + watcher loop
+  transfer.py              HTTP server + client (send/ping)
+  notify.py                optional desktop notifications
 examples/
-  config.example.toml                   config template (copy to config.toml)
-  localdrop.service.example             Linux systemd user unit
-  com.localdrop.plist.example           macOS launchd agent
+  config.example.toml      config template (copy to config.toml)
+  localdrop.service.example     Linux systemd user unit
+  com.localdrop.plist.example   macOS launchd agent
 ```
+
+## Troubleshooting
+
+### Mac cannot reach the Linux server (connection refused / timeout)
+
+**Firewall:** Linux may be blocking port 8765. If you use `ufw`:
+
+```bash
+sudo ufw allow 8765/tcp
+```
+
+**Multiple network interfaces:** If Linux has both ethernet and WiFi, make sure
+`server.host = "0.0.0.0"` in Linux's `config.toml` (not a specific IP), and
+that the Mac's `peer.host` points to the correct Linux IP. You can find Linux's
+IPs with:
+
+```bash
+ip addr show | grep "inet "
+```
+
+**Daemon not running:** Confirm the daemon is up and listening:
+
+```bash
+ss -ltn | grep 8765
+```
+
+### Linux cannot reach the Mac server
+
+macOS does not have a built-in firewall rule blocking this, but check that the
+Mac's daemon is actually running (`python main.py daemon`) and that Linux's
+`peer.host` is set to the Mac's current IP (can change on DHCP networks).
 
 ## License
 

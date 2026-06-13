@@ -81,3 +81,53 @@ notify.py      optional desktop notifications
 mDNS discovery, Hyprland Rofi menu, macOS menu-bar app, iPhone Shortcuts,
 QR pairing, Tailscale mode, HTTPS, end-to-end encryption, image-clipboard
 support.
+
+---
+
+## 2026-06-13 — Firewall fix + folder restructure
+
+### Linux firewall blocking the server (ufw)
+
+During first real two-machine test the Mac could send clipboard to Linux (Linux
+daemon reachable ✓) but Linux could not send to the Mac — wait, actually the
+opposite: the Mac could not reach the Linux server at all, while Linux's
+clipboard watcher was successfully pushing to the Mac.
+
+Diagnosis:
+- `ufw` was **active** on the Linux machine and blocking inbound connections on
+  port 8765.
+- Linux also had **two network interfaces** (`eno1` at `192.168.1.109` and
+  `wlan0` at `192.168.1.110`). The server was bound to only one of them because
+  the user had set a specific IP in `config.toml` instead of `0.0.0.0`.
+
+Fix:
+```bash
+sudo ufw allow 8765/tcp
+```
+And ensure `server.host = "0.0.0.0"` in `config.toml` so the server listens on
+all interfaces. The Mac's `peer.host` must match whichever Linux IP is on the
+same network segment.
+
+Added a Troubleshooting section to README with these details.
+
+### Folder restructure
+
+Moved the four support modules (`config.py`, `clipboard.py`, `transfer.py`,
+`notify.py`) into `src/` to separate library code from the entry point.
+`main.py` stays at the project root and prepends `src/` to `sys.path` so all
+internal imports remain unchanged. `config.py` updated to resolve `config.toml`
+one directory up (project root) rather than next to itself.
+
+New layout:
+```
+main.py          entry point (adds src/ to path)
+src/
+  config.py      load/validate config.toml
+  clipboard.py   read/write clipboard, watcher loop
+  transfer.py    HTTP server + client
+  notify.py      desktop notifications
+examples/
+  config.example.toml
+  localdrop.service.example
+  com.localdrop.plist.example
+```

@@ -7,8 +7,8 @@ import os
 import sys
 import tomllib
 
-# The config lives in the same directory as the program.
-CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.toml")
+# config.py lives in src/; config.toml lives one level up at the project root.
+CONFIG_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "config.toml")
 
 # Sections (and the keys inside them) that must exist for the program to run.
 REQUIRED = {
@@ -27,7 +27,7 @@ def load_config():
     if not os.path.exists(CONFIG_PATH):
         sys.exit(
             f"Config not found: {CONFIG_PATH}\n"
-            "Copy config.example.toml to config.toml and edit it."
+            "Copy examples/config.example.toml to config.toml and edit it."
         )
 
     with open(CONFIG_PATH, "rb") as f:

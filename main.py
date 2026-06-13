@@ -7,9 +7,13 @@ Usage:
     python main.py ping          # check that the peer is reachable
 """
 
+import os
 import sys
 import threading
 import urllib.error
+
+# Add src/ to the path so the support modules are importable.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
 
 import clipboard
 import transfer

@@ -79,7 +79,13 @@ def make_handler(config):
 
             # Record it as remote first (loop guard), then set the clipboard.
             clipboard.set_remote(text)
-            clipboard.write_clipboard(config, text)
+            try:
+                clipboard.write_clipboard(config, text)
+            except Exception as e:
+                print(f"[clipboard] could not write clipboard from {source or 'peer'}: {e}")
+                self._send_json(500, {"error": "clipboard write failed"})
+                return
+            print(f"[clipboard] received from {source or 'peer'} ({len(text)} chars)")
             self._send_json(200, {"status": "ok"})
 
         def _handle_file(self):
