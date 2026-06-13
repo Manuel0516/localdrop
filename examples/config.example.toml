@@ -1,0 +1,36 @@
+# LocalDrop configuration template.
+#
+# Copy this file to config.toml and edit it for each device:
+#   cp config.example.toml config.toml
+#
+# The two devices share almost the same config -- only device.name,
+# device.platform, peer.name and peer.host differ. The example below is for the
+# LINUX machine. The matching macOS values are shown in comments.
+
+[device]
+name = "linux"          # macOS: "macbook"
+platform = "linux"      # macOS: "macos"
+
+[server]
+host = "0.0.0.0"        # listen on all interfaces
+port = 8765
+
+[peer]
+name = "macbook"        # macOS: "linux"
+host = "192.168.1.20"   # macOS: the Linux machine's IP, e.g. 192.168.1.10
+port = 8765
+
+[clipboard]
+enabled = true
+poll_interval = 0.7     # seconds between clipboard checks
+
+[files]
+enabled = true
+download_dir = "~/Downloads/LocalDrop"
+
+[security]
+encryption = false              # HTTPS not implemented in v1; token auth only
+shared_token = "change-this-token"   # MUST match on both devices
+
+[notifications]
+enabled = true

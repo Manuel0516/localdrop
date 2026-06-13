@@ -1,0 +1,14 @@
+[Unit]
+Description=LocalDrop clipboard and file sync
+After=graphical-session.target
+
+[Service]
+# Adjust the path to where you cloned localdrop. %h expands to your home dir.
+# If "python" is not on PATH for the service, use /usr/bin/python explicitly.
+ExecStart=/usr/bin/python %h/projects/localdrop/main.py daemon
+WorkingDirectory=%h/projects/localdrop
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target

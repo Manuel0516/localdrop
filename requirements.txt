@@ -1,0 +1,8 @@
+# LocalDrop has no third-party Python dependencies.
+#
+# Everything uses the standard library (http.server, urllib, tomllib,
+# subprocess, threading). Requires Python 3.11+ (tomllib is built in).
+#
+# System tools needed:
+#   Linux: wl-clipboard (wl-copy/wl-paste), libnotify (notify-send)
+#   macOS: pbcopy/pbpaste and osascript (built in)

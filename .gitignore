@@ -1,0 +1,10 @@
+# Local config holds the shared token -- never commit it.
+config.toml
+
+# Python
+__pycache__/
+*.pyc
+
+# Received files (if someone points download_dir inside the repo)
+Downloads/
+LocalDrop/
