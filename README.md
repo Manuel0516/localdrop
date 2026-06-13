@@ -9,6 +9,7 @@ Python daemons talking to each other.
 - **Zero third-party dependencies** — pure Python standard library
 - **One config file** controls everything
 - **Auto-start on Linux** with a user systemd service
+- **Auto-start on macOS** with a LaunchAgent
 
 > Intended for trusted local networks only. Authentication is a single shared
 > token over plain HTTP. Do not expose it to the public internet.
@@ -89,7 +90,42 @@ journalctl --user -u localdrop.service -f   # follow logs
 
 ## Auto-start on macOS (launchd, optional)
 
-See `examples/com.localdrop.plist.example` for a ready-to-edit LaunchAgent.
+LocalDrop needs Python 3.11+ because it uses the standard-library `tomllib`
+module. On macOS, `/usr/bin/python3` may be Apple's older Python and can fail
+with `ModuleNotFoundError: No module named 'tomllib'`. Use the full path to a
+newer Python instead, for example Homebrew's `/opt/homebrew/bin/python3`.
+
+```bash
+which python3
+python3 --version
+```
+
+Copy the example, edit the Python path and project paths, then install it:
+
+```bash
+cp examples/com.localdrop.plist.example com.localdrop.plist
+# edit com.localdrop.plist:
+# - ProgramArguments[0] should be your Python 3.11+ path
+# - /Users/YOURNAME/projects/localdrop should match your clone path
+
+mkdir -p ~/Library/LaunchAgents
+cp com.localdrop.plist ~/Library/LaunchAgents/com.localdrop.plist
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.localdrop.plist
+```
+
+After editing the plist, reload it:
+
+```bash
+launchctl bootout gui/$(id -u) ~/Library/LaunchAgents/com.localdrop.plist
+cp com.localdrop.plist ~/Library/LaunchAgents/com.localdrop.plist
+launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.localdrop.plist
+```
+
+Check that it is running:
+
+```bash
+launchctl print gui/$(id -u)/com.localdrop
+```
 
 ## HTTP API
 
@@ -162,6 +198,16 @@ ss -ltn | grep 8765
 macOS does not have a built-in firewall rule blocking this, but check that the
 Mac's daemon is actually running (`python main.py daemon`) and that Linux's
 `peer.host` is set to the Mac's current IP (can change on DHCP networks).
+
+### macOS LaunchAgent fails with `Bootstrap failed: 5`
+
+This usually means launchd could not start the job, but the message is generic.
+For LocalDrop, first check the Python path in the plist. If it points to
+`/usr/bin/python3`, it may be too old for `tomllib`. Replace it with the path
+from `which python3`, as long as that Python is 3.11 or newer.
+
+Also make sure you reload the job after changing the plist; copying the file
+alone does not update an already-loaded LaunchAgent.
 
 ## License
 

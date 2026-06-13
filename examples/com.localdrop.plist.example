@@ -3,9 +3,11 @@
   macOS startup for LocalDrop (optional).
 
   Install:
-    cp com.localdrop.plist.example ~/Library/LaunchAgents/com.localdrop.plist
-    # edit the paths below, then:
-    launchctl load ~/Library/LaunchAgents/com.localdrop.plist
+    cp examples/com.localdrop.plist.example com.localdrop.plist
+    # edit the Python and project paths below, then:
+    mkdir -p ~/Library/LaunchAgents
+    cp com.localdrop.plist ~/Library/LaunchAgents/com.localdrop.plist
+    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.localdrop.plist
 -->
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
   "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -16,7 +18,7 @@
 
     <key>ProgramArguments</key>
     <array>
-        <string>/usr/bin/python3</string>
+        <string>/opt/homebrew/bin/python3</string>
         <string>/Users/YOURNAME/projects/localdrop/main.py</string>
         <string>daemon</string>
     </array>
