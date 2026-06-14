@@ -1,14 +1,17 @@
 [Unit]
 Description=LocalDrop clipboard and file sync
+# Start with the graphical session so Wayland clipboard variables are available.
 After=graphical-session.target
+PartOf=graphical-session.target
 
 [Service]
 # Adjust the path to where you cloned localdrop. %h expands to your home dir.
 # If "python" is not on PATH for the service, use /usr/bin/python explicitly.
+Environment=PYTHONUNBUFFERED=1
 ExecStart=/usr/bin/python %h/projects/localdrop/main.py daemon
 WorkingDirectory=%h/projects/localdrop
 Restart=always
 RestartSec=3
 
 [Install]
-WantedBy=default.target
+WantedBy=graphical-session.target

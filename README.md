@@ -79,6 +79,9 @@ Existing names are kept by adding a `-1`, `-2`, … suffix.
 
 ## Auto-start on Linux (systemd)
 
+The service is attached to `graphical-session.target` so it starts after the
+Wayland session environment is available for clipboard access.
+
 ```bash
 mkdir -p ~/.config/systemd/user
 cp examples/localdrop.service.example ~/.config/systemd/user/localdrop.service
